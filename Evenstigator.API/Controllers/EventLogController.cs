@@ -1,6 +1,8 @@
 ﻿using Evenstigator.API.DAO;
 using Evenstigator.API.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,6 +10,7 @@ namespace Evenstigator.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Produces("application/json")]
     public class EventLogController : Controller
     {
         private ETWContext _etwContext;
@@ -18,9 +21,11 @@ namespace Evenstigator.API.Controllers
 
         [HttpGet]
         [Route("logs")]
-        public IEnumerable<Log> Get()
+        [ProducesResponseType(typeof(IEnumerable), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        public IEnumerable<Log> Get([FromQuery]string sortOrder, [FromQuery]int limit)
         {
-            return _etwContext.GetAllEventLogs().ToList();
+            return _etwContext.GetAllEventLogs(sortOrder, limit).ToList();
         }
     }
 }

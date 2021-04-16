@@ -1,3 +1,4 @@
+using Evenstigator.API.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -26,24 +27,10 @@ namespace Evenstigator.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.ConfigureCors();
+            services.ConfigureIISIntegration();
             services.AddControllers();
-            // Register the Swagger Generator service. This service is responsible for genrating Swagger Documents.
-            // Note: Add this service at the end after AddMvc() or AddMvcCore().
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Title = "Evenstigator API",
-                    Version = "v1",
-                    Description = "API for Evenstigator windows service that logs events and stores them at custom locations",
-                    Contact = new OpenApiContact
-                    {
-                        Name = "Khathutshelo Matidza",
-                        Email = string.Empty,
-                        Url = new Uri("http://cartoo.co.za"),
-                    },
-                });
-            });
+            services.ConfigureSwagger();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,6 +42,10 @@ namespace Evenstigator.API
             }
 
             app.UseHttpsRedirection();
+
+            app.UseStaticFiles();
+
+            app.UseCors("CorsPolicy");
 
             app.UseRouting();
 
